@@ -1,0 +1,38 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="page-remains">
+  <div class="container">
+    <div id="bread-crumbs">U bent hier: </div>
+      <div class="col">
+        <h1 class="mt-5" style="text-align: center; font-size: 5.0rem;">Oefen Bridge Bieden</h1>
+        <h3 style="text-align: center;">Gratis - Zo veel u wilt - Wanneer u wilt</h3>
+
+        {{$res := index .Data "home"}}
+
+        <form action="/newbidgame" method="get">
+<!-- 
+          <input type="hidden" name="csrf_token" value="{{.CSRFToken}}"> -->
+
+            <div style="text-align: center;">
+              <button type="submit" class="btn btn-primary mt-5">Beginnen</button>
+            </div>
+
+        </form>
+
+      </div>
+
+      <!-- <div class="row">
+        <div class="col">
+          <p>
+            <button id="colorButton" class="btn btn-outline-secondary">Click me</button>
+          </p>
+        </div>
+      </div> -->
+
+    </div>
+  </div>
+</div>
+{{end}}
+{{define "js"}}
+{{end}}

@@ -1,0 +1,61 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"time"
+
+	"github.com/aleph-design/startbridge/internal/models"
+	mail "github.com/xhit/go-simple-mail/v2"
+)
+
+/************************************
+* A MEANS OF SENDING EMAIL MESSAGES *
+************************************/
+
+// permanent listener on channel mailChan
+func listenForMail() {
+	// listens permanently and fires off in the background
+	go func() {
+		for {
+			// msg is whatever we get from app.MailChan
+			msg := <-app.MailChan
+			sendMessage(msg)
+		}
+	}()
+}
+
+// send the mail
+func sendMessage(m models.MailData) {
+	// tell the package what the server is:
+	server := mail.NewSMTPClient()
+	server.Host = "localhost" // server name from provider
+	server.Port = 1025        // port from provider 25 | 587 | 465
+	server.KeepAlive = false
+	server.ConnectTimeout = 10 * time.Second // give up after 10 seconds
+	server.SendTimeout = 10 * time.Second
+
+	// in production we need:
+	// server.Username =
+	// server.Password =
+	// server.Encryption =
+
+	// we need a client
+	client, err := server.Connect()
+	if err != nil {
+		errorLog.Println(err)
+	}
+	
+	// construct message in client's format
+	email := mail.NewMSG()
+	email.SetFrom(m.From).AddTo(m.To).SetSubject(m.Subject)
+	email.SetBody(mail.TextHTML, m.Content)
+
+	// send that email
+	err = email.Send(client)
+	if err != nil {
+		log.Println("sendMessage: ", err)
+	} else {
+		fmt.Println("Email Sent!")
+	}
+}

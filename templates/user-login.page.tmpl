@@ -1,0 +1,56 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="page-remains">
+  <div class="container">
+    <div id="bread-crumbs">U bent hier:</div>
+      <div class="col">
+        <h1 class="mt-5" style="text-align: center; font-size: 5.0rem;">LOGIN</h1>
+        <h3 style="text-align: center;"></h3>
+
+        {{$res := index .Data "email"}}
+
+        <form action="/user-login" method="post">
+
+          <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+          <div class="row mt-5">
+            <div class="col"></div>
+            <div class="login-form col">
+
+              <div class="row mt-5">
+                <div class="form-group">
+                  <label for="email" class="form-label">Email adres:</label>
+                  {{with .Form.Errors.Get "email"}}
+                    <label class="error-danger">{{.}}</label>
+                  {{end}}
+                  <input type="text" class="form-control {{with .Form.Errors.Get "email"}} is-invalid {{end}}" id="email" name="email" value="{{$res.Email}}" aria-describedby="emailHelp">
+                  <div id="emailHelp" class="form-text">Vul een email adres in.</div>
+                </div>
+              </div>
+
+              <div class="row mt-3">
+                <div class="form-group">
+                  <label for="password" class="form-label">Wachtwoord:</label>
+                  {{with .Form.Errors.Get "password"}}
+                    <label class="error-danger">{{.}}</label>
+                  {{end}}                  
+                  <input type="password" class="form-control {{with .Form.Errors.Get "password"}} is-invalid {{end}}" id="password" name="password" aria-describedby="passwordHelp">
+                  <div id="passwordHelp" class="form-text">Vul uw wachtwoord in.</div>
+                </div>
+              </div>
+            </div>
+            <div class="col"></div>
+          </div>
+
+          <div style="text-align: center;">
+            <button type="submit" class="btn btn-primary mt-5">Login</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}
+{{define "js"}}
+{{end}}

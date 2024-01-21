@@ -1,0 +1,204 @@
+Section 15: Sending Mail using go
+---------------------------------
+
+step 1
+insy=tall package
+janhkila@imac coopwhoiswho % go get github.com/xhit/go-simple-mail/v2
+check go.mod
+
+in: models/models.go 
+create:
+type MailData struct{
+  To     string           // recepient email address
+  From    string          // senders email address
+  Subject string          // subject = onderwerp
+  Content string          // the emails body, could be HTML as well
+}
+
+we want to send the emails in the background using a channel
+in main.go we create the channel to be available to all parts of the application
+the channel we create listens at all times for the data type we just created
+to have it available in the whole application we put it in config.AppConfig
+we add a new member to
+type AppConfig struct {
+  ...
+  a lot of stuff
+  ...
+  MailChan  chan models.MailData
+}
+so: MailChan is a channel of type models.MailData
+
+in main.go:
+put it after the database connection for example
+mailChan := make(chan models.MailData)
+app.MailChan = mailChan
+defer close(app.MailChan)   // now it closes after main.go stops running
+
+step 2
+create a means of sending messages
+what we need is some place where it's constantly listening on channel mailChan
+create:
+  web/cmd/send-mail.go
+  package main
+  func listenForMail() {
+    // all it does is listen for mailChan
+    // we could do:
+    m := <- app.MailChan
+    // butt we wnat to send mail from every part of the application
+    // so, instead we create a function that runs indefinitely and fires of in the background
+    go func() {
+      // this fires off an unnamed function
+      // we want this function to listen all the time for incoming data
+      for {
+        // msg is whatever you get from app.MailChan; and this sends the message
+        msg := <- app.MailChan
+        sendMessage(msg)
+      }
+    }()
+  }
+  check if this works and construct a message
+
+  func sendMessage(m models.MailData) {
+    // return noting just sends the email
+    // first we tell the package we installed what the server is:
+    server := mail.NewSMTPClient()
+    server.Host = "localhost"     // the servername we get from the provider
+    server.Port = 1025            // the port number we get from the provider 25 | 587 | 465
+    server.KeepAlive = false      // we don't want the server life all the time
+    server.ConnectTimeout = 10 * time.Second    // give up after 10 seconds
+    server.SendTimeout = 10 * time.Second       // 
+
+    // in production we need:
+    server.Username
+    server.Password
+    server.Encryption
+
+    // next we need a client
+    client, err := server.Connect()
+    if err != nil {
+      errorLog.Println(err)
+    }
+
+    // here we construct the email message in format the client understands
+    // create a New empty message which is a struct as a pointer to email
+    email := mail.NewMSG()
+    email.SetFrom(m.From).AddTo(m.To).SetSubject(m.Subject)
+    email.SetBody(
+      mail.TextHTML,
+      "Hello, <stong>WORLD!</strong>"     // we put this content in ourselfs
+    )
+
+    // now we can send that email
+    err = mail.Send(client)
+    if err != nil {
+      log.Println(err)
+    } else {
+      fmt.Println("Email Sent!")
+    }
+  }
+
+We need to call the listenForMail() function
+go to mail.go:
+  // rifht after defer close(app.MailCahn)
+  listenForMail()
+  fmt.Println("Mail listener started!")
+
+Check for compiling.
+
+
+step 3
+for the first test right after "listenForMail()"
+
+this part:
+----------------------------------
+    msg := models.MailData{
+      To:       "you@there.com"
+      From:     "me@here.com"
+      Subject:  "A test email"  
+      Content:  ""                // we already put this in ourselfs see above
+    }
+
+    // to send the mail
+    app.MailChan <- msg
+----------------------------------
+is used to send the mail from any part of the program!
+
+run the programm after compilation
+and check whether there is mail in mailhog.
+
+In the terminal:
+  ... % brew services stop mailhog    // to stop mailhog
+
+  ... % brew servives start mailhog   // start mailhog
+
+Check it's running:
+  localhost:8025
+
+
+step 4
+Now, with this working every time - on any page in the
+application - when we want to send mail we can construct 
+the mail data using this format:
+
+    msg := models.MailData{
+      To:       "you@there.com"
+      From:     "me@here.com"
+      Subject:  "A test email"  
+      Content:  ""                // we already put this in ourselfs see above
+    }
+    // to send the mail
+    app.MailChan <- msg
+
+populate member Content with the content we want to to send 
+and then send it through the channel that will send the mail 
+in the background:
+
+    // to send the mail
+    app.MailChan <- msg
+
+We hard coded this part for test purpose in send-mail.go
+
+    email.SetBody(
+      mail.TextHTML,
+      "Hello, <stong>WORLD!</strong>"     // we put this content in ourselfs
+    )
+
+We need to change it like this:
+
+    email.SetBody(
+      mail.TextHTML,
+      m.Content
+    )
+
+Now it's ready for use.
+
+step 5
+Remove this part from main.go:
+
+    msg := models.MailData{
+      To:       "you@there.com"
+      From:     "me@here.com"
+      Subject:  "A test email"  
+      Content:  ""                // we already put this in ourselfs see above
+    }
+
+    // to send the mail
+    app.MailChan <- msg
+
+Select a suitable POST handler, after the validation check
+before you redirect to another page and add:
+
+    htmlMsg := `Put whatever content& data you like here`
+
+    msg := models.MailData{
+      To:       "you@there.com",   // comes from the model
+      From:     "me@here.com",     // from some global standard data
+      Subject:  "A test email",    // mail specific
+      Content:  htmlMsg,           // your mail content
+    }
+
+    m.App.MailChan <- msg           // send the mail
+
+And that's it!
+
+

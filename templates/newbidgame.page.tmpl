@@ -1,0 +1,137 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="page-table">
+  <div class="container">
+    <div id="bread-crumbs">U bent hier: </div>
+
+    <div class="row">
+      <div class="col">
+        {{$res := index .Data "bidData"}}
+        <form action="/bidgame" method="get">
+          <!-- <input type="hidden" name="csrf_token" value="{{.CSRFToken}}"> -->
+
+          <div id="full-size">
+
+            <div class="table-and-bidbox-area">
+        
+              <div class="table-area">
+                <!-- <h2>Table area</h2> -->
+                <div class="table-text-area">
+                  <div class="table-text-top">
+                    <h2>NOORD: </h2>
+                  </div>
+                  <div class="table-text-inner">
+                  <h2 class="table-text-west">WEST: {{$res.West}} &ensp;</h2>
+                  <div class="table">
+                    <h2>{{$res.North}}</h2>
+                    <div class="kwetsbaar">
+                      <div class="kwets-east-west"></div>
+                      <div class="kwets-north-south"></div>
+                      <div class="kwets-all"></div>
+                    </div>
+                    <h2>{{$res.South}}</h2>
+                  </div>
+                  <h2 class="table-text-oost">&emsp;OOST: {{$res.East}}</h2>
+                  </div>
+                  <div class="table-text-bottom">
+                    <h2>ZUID: </h2>
+                  </div>
+                </div>
+              </div>
+        
+              <div class="bidbox-area">
+        
+                <div class="myDiv">
+                  <div class="column">
+                    <div class="box-row">
+                      <a href="/bidbox?id=4"><img class="box-img" src="/static/images/box/1-no-trump.png" alt="box"></a>
+                      <a href="/bidbox?id=3"><img class="box-img" src="/static/images/box/1-spades.png" alt="box"></a>
+                      <a href="/bidbox?id=2"><img class="box-img" src="/static/images/box/1-hearts.png" alt="box"></a>
+                      <a href="/bidbox?id=1"><img class="box-img" src="/static/images/box/1-diamonds.png" alt="box"></a>
+                      <a href="/bidbox?id=0"><img class="box-img" src="/static/images/box/1-clubs.png" alt="box"></a>
+                    </div>
+                    <div class="box-row">
+                      <a href="/bidbox?id=9"><img class="box-img" src="/static/images/box/2-no-trump.png" alt="box"></a>
+                      <a href="/bidbox?id=8"><img class="box-img" src="/static/images/box/2-spades.png" alt="box"></a>
+                      <a href="/bidbox?id=7"><img class="box-img" src="/static/images/box/2-hearts.png" alt="box"></a>
+                      <a href="/bidbox?id=6"><img class="box-img" src="/static/images/box/2-diamonds.png" alt="box"></a>
+                      <a href="/bidbox?id=5"><img class="box-img" src="/static/images/box/2-clubs.png" alt="box"></a>
+                    </div>
+                    <div class="box-row">
+                      level 3
+                    </div>
+                    <div class="box-row">
+                      level 4
+                    </div>
+                    <div class="box-row">
+                      level 5
+                    </div>
+                    <div class="box-row">
+                      level 6
+                    </div>
+                    <div class="box-row">
+                      level 7
+                    </div>
+                    <div class="box-row">
+                      <a href="/bidbox?id=39"><img class="box-img" src="/static/images/box/PASS.png" alt="box"></a>
+                      <a href="#"><img class="box-img" src="/static/images/box/VOID.png" alt="box"></a>
+                      <a href="/bidbox?id=37"></a><img class="box-img" src="/static/images/box/DBL.png" alt="box"></a>
+                      <a href="#"><img class="box-img" src="/static/images/box/VOID.png" alt="box"></a>
+                      <a href="/bidbox?id=35"></a><img class="box-img" src="/static/images/box/RDBL.png" alt="box"></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        
+            </div>
+        
+            <div class="cards-and-msg-area">
+        
+              <div class="card-area">
+                <div class="disp-cards">
+                  <img class="card-img" src="/static/images/cardFile.png" alt="cards"></a>
+                </div>
+              </div>
+        
+              <div class="msg-area">
+                <div class="msg-box">
+
+                  <div class="msg-box-msg">
+                    <div class="msg-box-top">
+                      <h2>{{$res.TopMsg}}</h2>
+                    </div>
+                    <div class="msg-box-body">
+                      <p>{{$res.Msg_1}}</p>
+                      <p>{{$res.Msg_2}}</p>
+                    </div>
+                  </div>
+
+                  <div class="msg-box-btn">
+                    <a href="/newbidgame" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">OpNieuw</a>
+                  </div>
+
+                </div>
+              </div>       
+            </div>
+        
+          </div>
+
+
+ 
+            
+            <!-- <div style="text-align: center;">
+              <button type="submit" id="btn-submit" class="btn btn-primary mt-4">Opslaan</button>
+            </div> -->
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}
+
+{{define "js"}}
+{{end}}
+
+
+

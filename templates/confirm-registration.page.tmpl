@@ -1,0 +1,20 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="page-remains">
+  <div class="container">
+    <div id="bread-crumbs">U bent hier: </div>
+    <div class="row">
+      <div class="col">
+        <h1 class="mt-4">Registratie Bevestigd</h1>
+        <h4 style="margin-bottom:20px; text-align: center;">Wij delen uw gegevens nooit met derden.</h4>
+
+        {{$res := index .Data "people"}}
+
+        <h3>Hallo {{$res.FULLNAME}},</h3>
+        {{$res}}
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}

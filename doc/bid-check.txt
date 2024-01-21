@@ -1,0 +1,57 @@
+// check for enough points
+// =======================
+				(A 				<    B)		   || (    C       <         A)
+	if (app.Game.South.Hand.Hcp < node.PtnMin) || (node.PtnMax < app.Game.South.Hand.Hcp ) {
+		app.BidData.TopMsg = "NIET GOED."
+		app.BidData.Msg_1 = "Er zijn 12-19 punten nodig om te openen."
+
+		return false
+	}
+	app.BidData.Msg_1 = "Voldoende punten om te openen."
+
+
+		  ( D    ==  E )  ||  ( D     ==  F )   &&     !( G     <=            H )
+	if ((candKey == "1H") || (candKey == "1S")) && !(node.Cards <= len(app.Game.South.Hand.Bins[1])) {
+		app.BidData.TopMsg = "NIET GOED."
+		app.BidData.Msg_2 = "Je hebt géén 5+ kaart harten of schoppen."
+
+		return false
+	}
+
+	app.BidData.TopMsg = "GOED."
+	app.BidData.Msg_2 = "En een 5+ kaart harten of schoppen."
+
+	return true
+
+// return DATA:
+TopMsg
+Msg_1
+Msg_2
+
+// return BOOL
+true | false
+
+//Check variabels
+A = Hand.Hcp			actueel aantal punten in de betreffende hand
+B = node.PtnMin			minimaal vereist aantal punten voor dit bod
+C = node.PtnMax			maximaal vereist aantal punten voor dit bod
+D = candKey 			het candidaat bod; bod is ingevoerd maar dit is juist wat we checken
+E = "1H" = bid.Img		één van deze twee is leeg!
+F = "1S" = bid.Img		of je moet het handmatig toevoegen
+G = node.Cards			minimaal aantal kaarten van de geboden kleur dat in de hand aanwezig moet zijn
+H = len(hand.bins[x])	actueel aantal kaarten van kleur x in de hand; x => 0=schoppen, 1=harten, etc
+
+type check struct {
+	hcp int    // Actual number of chp in the hand
+	min int    // minimal required hcp for this bid
+	max int    // maximal allowed hcp for this bid
+	key string // candidate key for this bid
+	bid string // bid.Img => "1H", etc
+	crd int    // minimal required number of cards in this color
+	len int    // actual number of cards of color col
+	col int    // card color: 0=clubs, 1=diamonds, 2=hearts, 3=spades, 4=nt.
+}
+
+func CheckBid(check *models.Check)	*BidData, bool {
+	
+}

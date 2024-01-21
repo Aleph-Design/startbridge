@@ -1,0 +1,157 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="page-remains">
+  <div class="container">
+    <div id="bread-crumbs">U bent hier: </div>
+    <div class="row">
+      <div class="col">
+        <h1 class="mt-4">PersoonsGegevens:</h1>
+        <h4 style="margin-bottom:20px; text-align: center;">Wij delen uw gegevens nooit met derden.</h4>
+
+        {{$res := index .Data "people"}}
+
+        <form action="/registration" method="post">
+
+          <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+            <div class="row">
+              <div class="col">
+                <h3>Deze kolom is VERPLICHT:</h3>
+                <p>Met deze gegevens maakt u zich bekend en heeft u beperkte zoek mogelijkheden.</p>
+                <div class="form-group mt-2">
+                  <label class="form-label">Voornaam:</label>
+                  {{with .Form.Errors.Get "first-name"}}
+                    <label class="error-danger">{{.}}</label>
+                  {{end}}
+                  <input type="text" class="form-control {{with .Form.Errors.Get "first-name"}} is-invalid {{end}}" id="first-name" name="first-name" value="{{$res.FirstName}}">
+                </div>
+
+                <div class="form-group mt-2">
+                  <label class="form-label">Tussen voegsel:</label>
+                  <input type="text" class="form-control" id="infix-name" name="infix-name" value="{{$res.InfixName}}">
+                </div>
+
+                <div class="form-group mt-2">
+                  <label for="last-name" class="form-label">Achternaam:</label>
+                  {{with .Form.Errors.Get "last-name"}}
+                    <label class="error-danger">{{.}}</label>
+                  {{end}}
+                  <input type="text" class="form-control {{with .Form.Errors.Get "last-name"}} is-invalid {{end}}" id="last-name" name="last-name" value="{{$res.LastName}}">
+                </div>
+
+                <div class="form-group mt-2">
+                  <label for="email" class="form-label">Emailadres:</label>
+                  {{with .Form.Errors.Get "email"}}
+                    <label class="error-danger">{{.}}</label>
+                  {{end}}
+                  <input type="text" class="form-control {{with .Form.Errors.Get "email"}} is-invalid {{end}}" id="email" name="email" value="{{$res.Email}}">
+                </div>
+
+                <div class="form-group mt-2">
+                  <label for="password" class="form-label">Wachtwoord</label>
+                  {{with .Form.Errors.Get "password"}}
+                    <label class="error-danger">{{.}}</label>
+                  {{end}}
+                  <input type="password" class="form-control{{with .Form.Errors.Get "password"}} is-invalid {{end}}" id="password" name="password">
+                </div>
+
+                <div class="form-check mt-5">
+                  <input type="checkbox" class="form-check-input" id="check-box" name="check-box" {{$res.CHECKBOX}}>
+                  {{- if $res.CHECKBOX}}
+                    <label for="check-box" class="form-check-label form-check-checked">Bestuursleden ACTIEF</label>
+                  {{else}}
+                    <label for="check-box" class="form-check-label">Bestuursleden IN-actief</label>
+                  {{end}}
+                </div>
+                <p></p>
+                <div class="privacy-check">
+                  {{with .Form.Errors.Get "privacy-box"}}<span><label class="error-danger">{{.}}</label></span>{{end}}
+                  <div class="form-check">
+                    <input type="checkbox" class="privacy-check-input" id="privacy-box" name="privacy-box" {{$res.PRIVACYBOX}}>
+                    <label  class="privacy-check-label {{with .Form.Errors.Get "privacy-box"}} privacy-invalid {{end}}"><p>U stemt in met het gebruik van uw gegevens.<br>Het gebruik van uw gegevens is conform onze <a href="/privacy-statement">privacyverklaring</a></p></label>
+                </div>
+                </div>
+
+              </div>
+              
+              <div class="col board" id="board-column">
+                <h3 style="text-align: center;">Deze kolom is voor BESTUURSLEDEN</h3>
+                <p>De uitgebreide gegevens bieden meer zoek mogelijkheden</p>
+
+                <div class="form-group mt-2">
+                  <label for="street" class="form-label">Straatnaam:</label>
+                  <input type="text" class="form-control" id="street" name="street" value="{{$res.Street}}">
+                </div>
+
+                <div class="form-group mt-2">
+                  <label for="postcode" class="form-label">Postcode:</label>
+                  <input type="text" class="form-control" id="postcode" name="postcode" value="{{$res.Postcode}}">
+                </div>
+                 
+                <div class="form-group mt-2">
+                  <label for="home-city" class="form-label">Woonplaats:</label>
+                  <input type="text" class="form-control" id="city" name="city" value="{{$res.City}}">
+                </div>
+                                 
+                <div class="form-group mt-2">
+                  <label for="province-id" class="form-label">Provincie:</label>
+                  <input type="text" class="form-control" id="province-id" name="province-id" 
+                  value="{{$res.PROVINCE}}" onKeyUp="getInput(this, '{{.CSRFToken}}')" aria-describedby="province-idHelp">
+                  <div id="province-idHelp" class="form-text">Eerste DRIE letters Provincie naam.</div>
+                  <div id="province-list"></div>
+                </div>
+                 
+                <div class="form-group mt-2">
+                  <label for="phone" class="form-label">Telefoon:</label>
+                  {{with .Form.Errors.Get "phone"}}
+                    <label class="error-danger">{{.}}</label>
+                  {{end}}
+                  <input type="text" class="form-control {{with .Form.Errors.Get "phone"}} is-invalid {{end}}" id="phone" name="phone" value="{{$res.Phone}}">
+                </div>
+
+                <div class="form-group mt-2">
+                  <label for="birth-date" class="form-label">Geboorte datum:</label>
+                  {{with .Form.Errors.Get "birth-date"}}
+                    <label class="error-danger">{{.}}</label>
+                  {{end}}
+                  <input type="text" class="form-control {{with .Form.Errors.Get "birth-date"}} is-invalid {{end}}" id="birth-date" name="birth-date" 
+                  value="{{$res.BIRTHDATE}}" placeholder="dd-mm-yyyy">
+                </div>
+
+                <div class="form-group mt-2">
+                  <label for="birth-date" class="form-label">Geboorte plaats:</label>
+                  {{with .Form.Errors.Get "birth-city"}}
+                    <label class="error-danger">{{.}}</label>
+                  {{end}}
+                  <input type="text" class="form-control{{with .Form.Errors.Get "birth-city"}} is-invalid {{end}}" id="birth-city" name="birth-city" value="{{$res.BirthCity}}">
+                </div>
+
+                <div class="form-group mt-2">
+                  <label for="bs-number" class="form-label">Burger Service Nummer:</label>
+                    {{with .Form.Errors.Get "bs-number"}}
+                  <label class="error-danger">{{.}}</label>
+                  {{end}}
+                  <input type="text" class="form-control {{with .Form.Errors.Get "bs-number"}} is-invalid {{end}}" id="bs-number" name="bs-number" value="{{$res.BsNumber}}">
+                </div>
+
+              </div>
+            </div>
+            
+            <div style="text-align: center;">
+              <button type="submit" id="btn-submit" class="btn btn-primary mt-4">Opslaan</button>
+            </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}
+
+{{define "js"}}
+  <script src="/static/js/registration.js"></script>
+{{end}}
+
+
+
